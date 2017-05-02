@@ -49,6 +49,9 @@ function kmsDecrypt(thenCtx) {
 ### Methods of "thenContext" object:
 * promisify() - returns itself as the immediately resolved promise
 * finilize(thenCtx, arguments) - log, prepare response and invoke "callback" with the response prepared
- 
+
+## Tests
+`npm test`
+
 ## License
 ISC © Vadim Konstantinov
