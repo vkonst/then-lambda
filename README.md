@@ -3,7 +3,9 @@
 
 ## Why?
 A Lambda handler often runs a number of consequent asynchronous computational steps.
+
 Javascript's Promise API provides a nice way to chain them by ".then" calls.
+
 Moreover, the "middleware" behaviour (like the one in express.js) may easily be incorporated in the "chain", making the code cleaner and simpler.
 
 ## Usage
@@ -22,7 +24,7 @@ exports.handler = (event, context, callback) => {
         .catch(thenCtx.finalize);
 };
 ```
-Every ".then" function is passed "thenContext" object and is expected to return the same object to the next function in the chain - ether directly or via the Promise:   
+Every ".then" function is passed with "thenContext" object and is expected to return the same object to the next function in the chain - ether directly or via the Promise resolving to it:   
 ```javascript
 function publishIotMsg(thenCtx) {
     let device = thenCtx.config.device;
@@ -42,11 +44,16 @@ function kmsDecrypt(thenCtx) {
 }
 ```
 ## API
-### Properties of "thenContext" object:
+
+### "thenContext" object
+ThenContext(event, context, callback) returns "thenContext" object
+
+#### properties:
 * event, ctx, cb - event, context and callback the AWS Lambda function is called with 
 * config: undefined - to share custom configuation / params between ".then" steps / modules
-* res: {} - response to pass to the "callback" 
-### Methods of "thenContext" object:
+* res: {} - response to pass to the "callback"
+
+#### methods:
 * promisify() - returns itself as the immediately resolved promise
 * finilize(thenCtx, arguments) - log, prepare response and invoke "callback" with the response prepared
 
