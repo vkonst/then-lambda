@@ -1,0 +1,25 @@
+{
+  "name": "then-lambda",
+  "version": "0.0.5",
+  "description": "A tiny lib to write AWS Lambda handlers as chained \".then\" calls",
+  "main": "thenContext.js",
+  "scripts": {
+    "test": "mocha test/*.spec.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/vkonst/then-lambda"
+  },
+  "keywords": [
+    "AWS",
+    "Lambda",
+    "promises",
+    "then"
+  ],
+  "author": "vadim.konstantinov@gmail.com",
+  "license": "ISC",
+  "devDependencies": {
+    "mocha": "^3.3.0",
+    "sinon": "^2.2.0"
+  }
+}
