@@ -1,6 +1,6 @@
 {
   "name": "then-lambda",
-  "version": "0.0.5",
+  "version": "0.0.1",
   "description": "A tiny lib to write AWS Lambda handlers as chained \".then\" calls",
   "main": "thenContext.js",
   "scripts": {
