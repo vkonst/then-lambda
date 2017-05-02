@@ -1,4 +1,4 @@
-# AWS Lambda handler as chained ".then" execution steps
+# AWS Lambda as chained ".then" steps
 > A tiny module to write an AWS Lambda handler as execution steps chained by ".then"
 
 ## Why?
@@ -31,4 +31,4 @@ function kmsDecrypt(thenCtx) {
 ```
 ## License
 
-ICS © Andrew McLagan
+ISC © Vadim Konstantinov
