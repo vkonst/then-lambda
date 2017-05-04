@@ -9,8 +9,8 @@ Javascript's Promise API provides a nice way to chain them by ".then" calls.
 Moreover, the "middleware" behaviour (like the one in express.js) may easily be incorporated in the "chain", making the code cleaner and simpler.
 
 ## Usage
-As an example, consider a "web-hook" handler that, against an http(s) request, decrypts the data with AWS.KMS service, then queries some DB, then publishes a message on a queue with the AWS.IoT, and finally responds to the original http(s) request whether the data has been published.
-Instead of being a "callback hell", the code may be as clean as:
+As an example, consider a "web-hook" handler that, against a http(s) request, decrypts the data with AWS.KMS service, then queries some DB, then publishes a message on a queue with the AWS.IoT, and finally responds to the original http(s) request whether the data has been published.
+<br/>Instead of being a "callback hell", the code may be as clean as:
 ```javascript
 let ThenContext = require('../thenContext');
 
@@ -36,7 +36,7 @@ function publishIotMsg(thenCtx) {
         .then(() => { return thenCtx });
 }
 ```
-Alternatively, any ".then" function may stop further processing and cause the request to be immediately responded like that:
+Alternatively, any ".then" function may stop further processing and cause the request to be immediately responded like this:
 ```javascript
 function kmsDecrypt(thenCtx) {
     // ...
@@ -45,17 +45,58 @@ function kmsDecrypt(thenCtx) {
 ```
 ## API
 
+### ThenContext(event, context, callback)
+Returns "thenContext" object
 ### "thenContext" object
-ThenContext(event, context, callback) returns "thenContext" object
-
 #### properties:
-* event, ctx, cb - event, context and callback the AWS Lambda function is called with 
-* config: undefined - to share custom configuation / params between ".then" steps / modules
-* res: {} - response to pass to the "callback"
-
+* __event, ctx, cb__ - event, context and callback the AWS Lambda function is called with 
+* __config__ - (undefined by default) custom configuration/params
+* __res__ - (empty object by default) response to pass to the "callback"
 #### methods:
-* promisify() - returns itself as the immediately resolved promise
-* finilize(thenCtx, arguments) - log, prepare response and invoke "callback" with the response prepared
+* __promisify()__
+ <br/>returns itself as the immediately resolved promise
+* __finilize(thenCtxOrError)__
+ <br/>logs, prepares the response and invokes the "callback" with the response prepared.
+ <br/>`thenCtxOrError` defines the arguments the 'callback' will be called with as follows.
+
+* If __finilize__ is called with itself, null/undefined, or empty string, the 'callback' is invoked with "ok" response:
+```javascript
+thenCtx.finilize();     // alternatively: thenCtx.finilize(thenCtx);
+
+// providing thenCtx.res.body is not defined, will result in:
+callback(null, {
+    headers: {'Content-Type': 'application/json'},
+    body: '{"result":"Ok"}',
+    statusCode: '200'
+});
+```
+* If __thenCtx.res.body__ is defined, it will be passed to the 'callback':
+```javascript
+thenCtx.res.body = '{"device-status": "ONLINE"}';               // mandatory, non-empty
+thenCtx.res.headers = {'Content-Type': 'application/json'};     // optional, 'text/plain' by default
+thenCtx.res.statusCode = '202';                                 // optional, '200' by default 
+
+thenCtx.finalize();     // alternatively: thenCtx.finilize(thenCtx);
+
+// will result in:
+callback(null, {
+    headers: {'Content-Type': 'application/json'},
+    body: '{"device-status": "ONLINE"}',
+    statusCode: '202'
+});
+```
+
+* Otherwise, 'callback' is invoked with 'error' response: 
+```javascript
+thenCtx.finalize(new Error('Unauthorized'));
+
+// no matter if thenCtx.res.body is defined or not, will result in:
+callback(null, {
+    headers: {'Content-Type': 'text/plain'},
+    body: 'Unauthorized',
+    statusCode: '400'
+});
+```
 
 ## Tests
 `npm test`
